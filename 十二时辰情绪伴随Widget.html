@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>十二时辰情绪伴随 Widget</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500&display=swap');
+
+        :root {
+            --transition-speed: 3000ms;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            transition: background var(--transition-speed) ease-in-out;
+            background: linear-gradient(135deg, #161D29, #1E293B);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .glass-card {
+            backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 16px;
+            transition: all var(--transition-speed) ease-in-out;
+        }
+
+        .time-display {
+            font-family: 'Noto Serif SC', serif;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        .pulse-glow {
+            animation: pulse 4s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+    <div class="glass-card max-w-sm w-full p-8 mx-4 flex flex-col items-center">
+        <div id="digital-time" class="text-xs text-white/50 mb-6">14:30</div>
+        <div id="time-period" class="time-display text-4xl font-light text-white mb-4">未时</div>
+        <div id="emotion-text" class="text-white/80 text-lg mb-8">舒缓沉静</div>
+        <div class="pulse-glow w-4 h-4 bg-white/30 rounded-full"></div>
+    </div>
+
+    <script>
+        // 十二时辰数据映射字典
+        const timeData = [
+            { start: 23, end: 1, color1: '#161D29', color2: '#1E293B', period: '子时', emotion: '宁静安眠' },
+            { start: 1, end: 3, color1: '#2C3033', color2: '#5C6366', period: '丑时', emotion: '潜藏休憩' },
+            { start: 3, end: 5, color1: '#1A1A1A', color2: '#262626', period: '寅时', emotion: '萌动苏醒' },
+            { start: 5, end: 7, color1: '#D69C9C', color2: '#F4B8B8', period: '卯时', emotion: '希望破晓' },
+            { start: 7, end: 9, color1: '#657067', color2: '#8B968D', period: '辰时', emotion: '清朗朝气' },
+            { start: 9, end: 11, color1: '#C4B081', color2: '#E8D3A2', period: '巳时', emotion: '充盈上升' },
+            { start: 11, end: 13, color1: '#C29615', color2: '#E6B422', period: '午时', emotion: '慵懒小憩' },
+            { start: 13, end: 15, color1: '#D1C5A5', color2: '#F5EACB', period: '未时', emotion: '舒缓沉静' },
+            { start: 15, end: 17, color1: '#81858A', color2: '#A4A8AD', period: '申时', emotion: '褪彩平稳' },
+            { start: 17, end: 19, color1: '#326362', color2: '#4B8E8D', period: '酉时', emotion: '乡愁沉淀' },
+            { start: 19, end: 21, color1: '#111111', color2: '#1A1A1A', period: '戌时', emotion: '归息安顿' },
+            { start: 21, end: 23, color1: '#161C26', color2: '#222B38', period: '亥时', emotion: '敛藏深邃' }
+        ];
+
+        // 获取当前时间并更新状态
+        function updateTimeStatus() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const digitalTime = `${hours}:${minutes}`;
+
+            // 找到对应的时辰数据
+            let currentTimeData;
+            if (hours >= 23 || hours < 1) {
+                currentTimeData = timeData[0];
+            } else {
+                currentTimeData = timeData.find(item => hours >= item.start && hours < item.end);
+            }
+
+            // 更新背景渐变色
+            document.body.style.background = `linear-gradient(135deg, ${currentTimeData.color1}, ${currentTimeData.color2})`;
+
+            // 更新卡片内容
+            document.getElementById('digital-time').textContent = digitalTime;
+            document.getElementById('time-period').textContent = currentTimeData.period;
+            document.getElementById('emotion-text').textContent = currentTimeData.emotion;
+        }
+
+        // 初始化并设置定时器
+        updateTimeStatus();
+        setInterval(updateTimeStatus, 60000); // 每分钟更新一次
+    </script>
+</body>
+</html>
